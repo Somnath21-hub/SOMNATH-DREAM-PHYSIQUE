@@ -17,8 +17,8 @@ const initRazorpay = () => {
   const keyId = process.env.RAZORPAY_KEY_ID;
   const keySecret = process.env.RAZORPAY_KEY_SECRET;
   
-  if (!keyId || !keySecret || keyId === "YOUR_RAZORPAY_KEY_ID" || keyId.includes("DUMMY")) {
-    console.log("Razorpay keys are not configured or set to dummy values. Using MOCK mode for checkout.");
+  if (!keyId || !keySecret || keyId === "YOUR_RAZORPAY_KEY_ID" || keyId.includes("DUMMY") || keyId.includes("MOCK")) {
+    console.log("Razorpay keys are not configured or set to dummy/mock values. Using MOCK mode for checkout.");
     return null;
   }
   
