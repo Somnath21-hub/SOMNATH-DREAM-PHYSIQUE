@@ -834,28 +834,52 @@
   flex: 1;
   position: relative;
   height: 700px;
-  box-shadow: 1px 3px 12px 2px rgba(0, 0, 0, 0.75);
-  -webkit-box-shadow: 1px 3px 12px 2px rgba(0, 0, 0, 0.75);
-  -moz-box-shadow: 1px 3px 12px 2px rgba(0, 0, 0, 0.75);
+  background: #000;
+  overflow: hidden;
+  transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), border-color 0.3s ease;
+  cursor: pointer;
+  border: 2px solid transparent;
+}
+.pricing .wrapper .card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 30px rgba(0, 149, 255, 0.25);
+}
+.pricing .wrapper .card.selected {
+  transform: translateY(-12px) scale(1.015);
+  box-shadow: 0 20px 40px rgba(0, 149, 255, 0.45);
+  border: 2px solid #0095ff;
+  z-index: 5;
+}
+.pricing .wrapper .card:nth-child(2).selected {
+  border-color: #f15a24;
+  box-shadow: 0 20px 40px rgba(241, 90, 36, 0.45);
+}
+.pricing .wrapper .card:before {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.65);
+  z-index: 1;
+  top: 0;
+  left: 0;
+  transition: background 0.3s ease;
+}
+.pricing .wrapper .card.selected:before {
+  background: rgba(0, 0, 0, 0.5);
 }
 .pricing .wrapper .card img {
   position: absolute;
   width: 100%;
+  height: 100%;
   top: 0;
   left: 0;
   object-fit: cover;
 }
-.pricing .wrapper .card:nth-child(1) img,
-.pricing .wrapper .card:nth-child(3) img {
-  height: 250px;
-}
-.pricing .wrapper .card:nth-child(2) img {
-  height: 100%;
-}
 .pricing .wrapper .card .title {
-  z-index: 1;
+  z-index: 2;
   position: relative;
-  height: 250px;
+  height: 220px;
   color: #fff;
   overflow-y: hidden;
   padding: 30px;
@@ -877,36 +901,21 @@
   z-index: 5;
   margin-top: 5px;
 }
-.pricing .wrapper .card .title::before {
-  content: "";
-  position: absolute;
-  height: 100%;
-  width: 100%;
-  top: 0;
-  left: 0;
-  background: rgba(0, 0, 0, 0.6);
-}
+.pricing .wrapper .card .title::before,
 .pricing .wrapper .card .title::after {
-  content: "";
-  position: absolute;
-  height: 20px;
-  width: 100%;
-  bottom: -11px;
-  background: whitesmoke;
-  transform: skew(0, -2deg);
-  left: 0;
+  display: none;
 }
 .pricing .wrapper .card .description {
-  background: whitesmoke;
   position: relative;
-  z-index: 1;
+  z-index: 2;
   flex: 3;
-  height: 450px;
+  height: 480px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   padding: 0 30px;
   gap: 20px;
+  color: #fff;
 }
 .pricing .wrapper .card .description p {
   display: flex;
@@ -917,74 +926,8 @@
 .pricing .wrapper .card .description p svg {
   color: #0095ff;
 }
-.pricing .wrapper .card .description a {
-  background: transparent;
-  color: #fff;
-  font-weight: 500;
-  background: #0095ff;
-  padding: 15px 30px;
-  border: none;
-  text-decoration: none;
-  width: fit-content;
-  transition: 0.3s;
-}
-.pricing .wrapper .card .description a:hover {
-  transition: 0.3s;
-  background: #0267af;
-}
-.pricing .wrapper .card:nth-child(2):before {
-  content: "";
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.6);
-  z-index: 1;
-}
-.pricing .wrapper .card:nth-child(2) .description {
-  background: transparent;
-  position: relative;
-  z-index: 1;
-  flex: 3;
-  height: 480px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 0 30px;
-  gap: 20px;
-  color: #fff;
-  padding-top: 20px;
-}
-.pricing .wrapper .card:nth-child(2) .title {
-  z-index: 1;
-  position: relative;
-  height: 220px;
-  color: #fff;
-  overflow-y: hidden;
-}
-.pricing .wrapper .card:nth-child(2) .title::after,
-.pricing .wrapper .card:nth-child(2) .title::before {
-  display: none;
-}
-
-/* --- Added professional card selection & join button styling --- */
-.pricing .wrapper .card {
-  transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), border 0.3s ease;
-  cursor: pointer;
-  border: 2px solid transparent;
-}
-.pricing .wrapper .card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 15px 30px rgba(0, 149, 255, 0.25);
-}
-.pricing .wrapper .card.selected {
-  transform: translateY(-12px) scale(1.015);
-  box-shadow: 0 20px 40px rgba(0, 149, 255, 0.45);
-  border: 2px solid #0095ff;
-  z-index: 5;
-}
-.pricing .wrapper .card:nth-child(2).selected {
-  border-color: #f15a24;
-  box-shadow: 0 20px 40px rgba(241, 90, 36, 0.45);
+.pricing .wrapper .card:nth-child(2) .description p svg {
+  color: #f15a24;
 }
 .pricing .wrapper .card .description .join-button {
   background: #0095ff;
