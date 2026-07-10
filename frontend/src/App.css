@@ -841,9 +841,16 @@
 .pricing .wrapper .card img {
   position: absolute;
   width: 100%;
-  height: 100%;
   top: 0;
   left: 0;
+  object-fit: cover;
+}
+.pricing .wrapper .card:nth-child(1) img,
+.pricing .wrapper .card:nth-child(3) img {
+  height: 250px;
+}
+.pricing .wrapper .card:nth-child(2) img {
+  height: 100%;
 }
 .pricing .wrapper .card .title {
   z-index: 1;
