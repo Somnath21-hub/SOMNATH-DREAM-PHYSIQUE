@@ -958,6 +958,59 @@
 .pricing .wrapper .card:nth-child(2) .title::before {
   display: none;
 }
+
+/* --- Added professional card selection & join button styling --- */
+.pricing .wrapper .card {
+  transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), border 0.3s ease;
+  cursor: pointer;
+  border: 2px solid transparent;
+}
+.pricing .wrapper .card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 30px rgba(0, 149, 255, 0.25);
+}
+.pricing .wrapper .card.selected {
+  transform: translateY(-12px) scale(1.015);
+  box-shadow: 0 20px 40px rgba(0, 149, 255, 0.45);
+  border: 2px solid #0095ff;
+  z-index: 5;
+}
+.pricing .wrapper .card:nth-child(2).selected {
+  border-color: #f15a24;
+  box-shadow: 0 20px 40px rgba(241, 90, 36, 0.45);
+}
+.pricing .wrapper .card .description .join-button {
+  background: #0095ff;
+  color: #fff;
+  font-weight: 600;
+  padding: 15px 30px;
+  border: none;
+  text-decoration: none;
+  width: 100%;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  box-shadow: 0 4px 10px rgba(0, 149, 255, 0.2);
+}
+.pricing .wrapper .card .description .join-button:hover {
+  background: #0267af;
+  box-shadow: 0 6px 15px rgba(0, 149, 255, 0.4);
+  transform: translateY(-2px);
+}
+.pricing .wrapper .card .description .join-button:active {
+  transform: translateY(0);
+}
+.pricing .wrapper .card .description .join-button.highlighted {
+  background: #f15a24;
+  box-shadow: 0 4px 15px rgba(241, 90, 36, 0.4);
+}
+.pricing .wrapper .card .description .join-button.highlighted:hover {
+  background: #d84513;
+  box-shadow: 0 6px 20px rgba(241, 90, 36, 0.6);
+}
 @media (max-width: 1520px) {
   .pricing {
     padding: 50px 20px 50px 20px;

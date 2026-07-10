@@ -6,6 +6,7 @@ import axios from "axios";
 
 const Pricing = () => {
   const { isAuthenticated, token, user } = useAuth();
+  const [selectedPlan, setSelectedPlan] = React.useState("YEARLY");
 
   const pricingPlans = [
     {
@@ -184,7 +185,11 @@ const Pricing = () => {
       <h1>Somnath's Physique PLANS</h1>
       <div className="wrapper">
         {pricingPlans.map((plan, index) => (
-          <div className="card" key={index}>
+          <div 
+            className={`card ${selectedPlan === plan.title ? "selected" : ""}`} 
+            key={index}
+            onClick={() => setSelectedPlan(plan.title)}
+          >
             <img src={plan.imgUrl} alt={`${plan.title} plan`} />
 
             <div className="title">
@@ -204,10 +209,14 @@ const Pricing = () => {
               <p><Check /> 20-Day Freezing Option</p>
 
               <button
-                className="join-button"
-                onClick={() => handlePayment(plan.price, plan.title)}
+                className={`join-button ${selectedPlan === plan.title ? "highlighted" : ""}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedPlan(plan.title);
+                  handlePayment(plan.price, plan.title);
+                }}
               >
-                Join Now
+                {selectedPlan === plan.title ? "Selected - Join Now" : "Join Plan"}
               </button>
             </div>
           </div>
