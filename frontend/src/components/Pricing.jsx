@@ -3,6 +3,7 @@ import React from "react";
 import { useAuth } from "../context/AuthContext";
 import { toast } from "react-toastify";
 import axios from "axios";
+import { API_URL } from "../config";
 
 const Pricing = () => {
   const { isAuthenticated, token, user } = useAuth();
@@ -41,7 +42,7 @@ const Pricing = () => {
     try {
       // 1. Create order on backend
       const { data } = await axios.post(
-        "http://localhost:4000/api/payment/checkout",
+        `${API_URL}/api/payment/checkout`,
         { amount, planName },
         {
           headers: {
@@ -69,7 +70,7 @@ const Pricing = () => {
         toast.info("Test Mode: Simulating payment success...");
         // Call backend to verify and update membership
         const verifyRes = await axios.post(
-          "http://localhost:4000/api/payment/verify",
+          `${API_URL}/api/payment/verify`,
           {
             razorpay_order_id: data.orderId,
             razorpay_payment_id: `pay_mock_${Math.random().toString(36).substring(2, 11)}`,
@@ -109,7 +110,7 @@ const Pricing = () => {
           const verifyToastId = toast.loading("Verifying payment...");
           try {
             const verifyRes = await axios.post(
-              "http://localhost:4000/api/payment/verify",
+              `${API_URL}/api/payment/verify`,
               {
                 razorpay_order_id: response.razorpay_order_id,
                 razorpay_payment_id: response.razorpay_payment_id,

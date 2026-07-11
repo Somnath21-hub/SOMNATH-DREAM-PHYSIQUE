@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
+import { API_URL } from "../config";
 import { toast } from "react-toastify";
 import { ClipLoader } from "react-spinners";
 import {
@@ -50,7 +51,7 @@ const AdminDashboard = () => {
 
   const fetchDashboardData = async () => {
     try {
-      const res = await axios.get("http://localhost:4000/api/dashboard/stats", {
+      const res = await axios.get(`${API_URL}/api/dashboard/stats`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -66,7 +67,7 @@ const AdminDashboard = () => {
 
   const updateContactStatus = async (contactId, status) => {
     try {
-      await axios.put(`http://localhost:4000/api/contacts/${contactId}`, { status }, {
+      await axios.put(`${API_URL}/api/contacts/${contactId}`, { status }, {
         headers: { Authorization: `Bearer ${token}` }
       });
       toast.success("Contact status updated");
