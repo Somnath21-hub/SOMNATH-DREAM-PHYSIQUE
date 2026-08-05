@@ -13,9 +13,11 @@ import Contact from "./components/Contact";
 import BMICalculator from "./components/BMICalculator";
 import Footer from "./components/Footer";
 import AdminDashboard from "./components/AdminDashboard";
+import Preloader from "./components/Preloader";
 
 const HomePage = () => (
   <>
+    <Preloader />
     <Navbar />
     <Hero />
     <WorkoutSessions />

@@ -1,4 +1,4 @@
-import { Check } from "lucide-react";
+import { Check, X, Shield, Sparkles, Zap, Award } from "lucide-react";
 import React from "react";
 import { useAuth } from "../context/AuthContext";
 import { toast } from "react-toastify";
@@ -11,22 +11,58 @@ const Pricing = () => {
 
   const pricingPlans = [
     {
-      imgUrl: "/pricing.jpg",
+      imgUrl: "/img2.jpg",
       title: "QUARTERLY",
+      displayName: "Quarterly Pack",
       price: 18000,
       duration: 3,
+      badge: "ESSENTIAL",
+      icon: Zap,
+      colorClass: "quarterly-theme",
+      features: [
+        { text: "Full gym floor & standard equipment access", available: true },
+        { text: "Standard locker room & shower facilities", available: true },
+        { text: "1 Free consultation with a certified coach", available: true },
+        { text: "Access to online workout planner builder", available: true },
+        { text: "Access to recovery steam room", available: false },
+        { text: "Free entry to intensive Bootcamps", available: false },
+      ]
     },
     {
       imgUrl: "/pricing.jpg",
       title: "HALF_YEARLY",
+      displayName: "Half-Yearly Pack",
       price: 34000,
       duration: 6,
+      badge: "MOST POPULAR",
+      icon: Shield,
+      colorClass: "half-yearly-theme",
+      features: [
+        { text: "Full gym floor & premium equipment access", available: true },
+        { text: "3 Free consultations with a certified coach", available: true },
+        { text: "Customized workout builder & basic diet plan", available: true },
+        { text: "Access to recovery steam room & sauna", available: true },
+        { text: "2 Complimentary guest passes per month", available: true },
+        { text: "Free entry to intensive Bootcamps", available: false },
+      ]
     },
     {
-      imgUrl: "/pricing.jpg",
+      imgUrl: "/img4.jpg",
       title: "YEARLY",
+      displayName: "Yearly VIP Pass",
       price: 67000,
       duration: 12,
+      badge: "BEST VALUE",
+      icon: Award,
+      colorClass: "yearly-theme",
+      features: [
+        { text: "24/7 Gym access & VIP keycard privileges", available: true },
+        { text: "Dedicated personal trainer (2 sessions/mo)", available: true },
+        { text: "Weekly custom diet & biomarker tracking", available: true },
+        { text: "Unlimited freezing option (up to 30 days)", available: true },
+        { text: "VIP locker, steam room & spa amenities", available: true },
+        { text: "Free entry to all Bootcamps & guest passes", available: true },
+      ]
     },
   ];
 
@@ -102,7 +138,7 @@ const Pricing = () => {
         key: data.keyId,
         amount: data.amount,
         currency: data.currency,
-        name: "Somnath's Physique",
+        name: "Dream Physique",
         description: `${planName} Membership Plan`,
         image: "/logo.png",
         order_id: data.orderId,
@@ -183,45 +219,79 @@ const Pricing = () => {
 
   return (
     <section className="pricing" id="pricing">
-      <h1>Somnath's Physique PLANS</h1>
-      <div className="wrapper">
-        {pricingPlans.map((plan, index) => (
-          <div 
-            className={`card ${selectedPlan === plan.title ? "selected" : ""}`} 
-            key={index}
-            onClick={() => setSelectedPlan(plan.title)}
-          >
-            <img src={plan.imgUrl} alt={`${plan.title} plan`} />
+      <div className="pricing-container">
+        
+        <div className="pricing-header">
+          <span className="section-badge orange-glow">MEMBERSHIPS</span>
+          <h1>DREAM PHYSIQUE PLANS</h1>
+          <p>
+            Choose the perfect training pack to unlock your peak performance. Enjoy access to elite equipment, custom dietary coaching, and a driven community.
+          </p>
+        </div>
 
-            <div className="title">
-              <h1>{plan.title}</h1>
-              <h1>PACKAGE</h1>
-              <h3>Rs {plan.price}</h3>
-              <p>
-                For {plan.duration} {plan.duration > 1 ? "Months" : "Month"}
-              </p>
-            </div>
-
-            <div className="description">
-              <p><Check /> Modern Equipment</p>
-              <p><Check /> All-Day Free Training</p>
-              <p><Check /> Free Restroom Access</p>
-              <p><Check /> 24/7 Expert Support</p>
-              <p><Check /> 20-Day Freezing Option</p>
-
-              <button
-                className={`join-button ${selectedPlan === plan.title ? "highlighted" : ""}`}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setSelectedPlan(plan.title);
-                  handlePayment(plan.price, plan.title);
-                }}
+        <div className="pricing-grid">
+          {pricingPlans.map((plan, index) => {
+            const IconComponent = plan.icon;
+            const isSelected = selectedPlan === plan.title;
+            return (
+              <div 
+                className={`pricing-card-premium ${plan.colorClass} ${isSelected ? "selected" : ""}`} 
+                key={index}
+                onClick={() => setSelectedPlan(plan.title)}
               >
-                {selectedPlan === plan.title ? "Selected - Join Now" : "Join Plan"}
-              </button>
-            </div>
-          </div>
-        ))}
+                {plan.badge && (
+                  <div className="plan-badge-wrapper">
+                    <span className="plan-badge">{plan.badge}</span>
+                  </div>
+                )}
+                
+                <div className="card-image-bg">
+                  <img src={plan.imgUrl} alt={`${plan.title} plan`} />
+                  <div className="image-overlay"></div>
+                </div>
+
+                <div className="card-top-content">
+                  <div className="plan-icon-header">
+                    <IconComponent size={24} />
+                    <span className="plan-duration-badge">{plan.duration} Months</span>
+                  </div>
+                  <h2>{plan.displayName}</h2>
+                  <div className="price-tag">
+                    <span className="currency-symbol">₹</span>
+                    <span className="price-amount">{plan.price.toLocaleString("en-IN")}</span>
+                    <span className="price-slash">/</span>
+                    <span className="price-period">total</span>
+                  </div>
+                </div>
+
+                <div className="card-features-list">
+                  {plan.features.map((feature, fIdx) => (
+                    <div key={fIdx} className={`feature-row ${feature.available ? "active" : "disabled"}`}>
+                      {feature.available ? (
+                        <Check size={16} className="feature-icon-check" />
+                      ) : (
+                        <X size={16} className="feature-icon-x" />
+                      )}
+                      <span>{feature.text}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <button
+                  className={`join-plan-btn ${isSelected ? "active-glow" : ""}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedPlan(plan.title);
+                    handlePayment(plan.price, plan.title);
+                  }}
+                >
+                  {isSelected ? "Select & Join Now" : "Choose Plan"}
+                </button>
+              </div>
+            );
+          })}
+        </div>
+
       </div>
     </section>
   );

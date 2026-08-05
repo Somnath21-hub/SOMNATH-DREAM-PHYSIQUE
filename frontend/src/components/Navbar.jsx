@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { User, LogIn, Settings, BarChart3 } from "lucide-react";
+import { User, LogIn, Settings, BarChart3, Dumbbell } from "lucide-react";
 import AuthModal from "./AuthModal";
 import UserProfile from "./UserProfile";
 
@@ -28,7 +28,8 @@ const Navbar = () => {
     <>
       <header className="navbar">
         <div className="navbar-brand">
-          <h1>Somnath's Physique</h1>
+          <Dumbbell className="brand-logo-icon" size={24} />
+          <h1>Dream Physique</h1>
         </div>
         
         <nav className="navbar-nav">
@@ -50,14 +51,14 @@ const Navbar = () => {
               {user?.role === "admin" && (
                 <Link to="/dashboard" className="dashboard-link">
                   <BarChart3 size={20} />
-                  Dashboard
+                  <span>Dashboard</span>
                 </Link>
               )}
             </div>
           ) : (
             <button className="login-button" onClick={handleAuthClick}>
               <LogIn size={20} />
-              Login
+              <span>Login</span>
             </button>
           )}
         </div>
