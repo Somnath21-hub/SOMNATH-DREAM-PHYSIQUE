@@ -778,8 +778,9 @@ h1, h2, h3, h4, h5, h6 {
   .hero {
     padding-left: 2.5rem;
   }
-  header {
-    margin-left: 2.5rem;
+  .navbar {
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
   }
   .hero .content .title {
     font-size: 2.75rem;
@@ -819,8 +820,9 @@ h1, h2, h3, h4, h5, h6 {
   .hero {
     padding-left: 1rem;
   }
-  header {
-    margin-left: 1rem;
+  .navbar {
+    padding-left: 1rem;
+    padding-right: 1rem;
   }
   .hero .content .buttons {
     flex-direction: column;
@@ -837,6 +839,7 @@ h1, h2, h3, h4, h5, h6 {
   position: relative;
   border-top: 1px solid rgba(255, 255, 255, 0.05);
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  overflow: hidden;
 }
 
 .workout_session::before {
@@ -1462,8 +1465,8 @@ h1, h2, h3, h4, h5, h6 {
 .gallery .images {
   display: flex;
   gap: 15px;
+  width: 100%;
   max-width: 1500px;
-  min-width: 1500px;
   margin: 0 auto;
 }
 .gallery .images div {
@@ -1478,7 +1481,8 @@ h1, h2, h3, h4, h5, h6 {
     padding: 50px 20px 50px 20px;
   }
   .gallery .images {
-    min-width: 100%;
+    width: 100%;
+    max-width: 100%;
     gap: 25px;
   }
 }
@@ -2177,7 +2181,7 @@ footer {
 .bmi .container {
   display: flex;
   gap: 50px;
-  min-width: 1500px;
+  width: 100%;
   max-width: 1500px;
   color: whitesmoke;
 }
