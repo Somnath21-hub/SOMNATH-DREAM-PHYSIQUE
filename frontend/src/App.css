@@ -2352,3 +2352,104 @@ footer {
   0% { opacity: 0; transform: translateY(5px); }
   100% { opacity: 1; transform: translateY(0); }
 }
+
+/* --- Professional Card Transitions & Scroll Animations --- */
+
+/* Base Fade In Up Entrance */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Staggered card animation setup */
+.bootcamp-card-premium, .pricing-card-premium {
+  animation: fadeInUp 0.8s cubic-bezier(0.25, 1, 0.5, 1) both;
+}
+
+.bootcamps-grid > :nth-child(1) { animation-delay: 0.1s; }
+.bootcamps-grid > :nth-child(2) { animation-delay: 0.2s; }
+.bootcamps-grid > :nth-child(3) { animation-delay: 0.3s; }
+.bootcamps-grid > :nth-child(4) { animation-delay: 0.4s; }
+
+.pricing-grid > :nth-child(1) { animation-delay: 0.1s; }
+.pricing-grid > :nth-child(2) { animation-delay: 0.2s; }
+.pricing-grid > :nth-child(3) { animation-delay: 0.3s; }
+
+/* Interactive Hover Transitions */
+.bootcamp-card-premium .icon-badge,
+.pricing-card-premium .plan-icon-header svg,
+.detail-icon-box,
+.stat-card,
+.save-button,
+.logout-button,
+.login-button,
+.user-button,
+.enroll-btn,
+.join-plan-btn,
+.submit-form-btn {
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+}
+
+/* Bootcamp Card Hover Micro-animations */
+.bootcamp-card-premium:hover .icon-badge {
+  transform: scale(1.15) rotate(8deg);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 15px currentColor;
+}
+
+/* Pricing Card Hover Micro-animations */
+.pricing-card-premium:hover .plan-icon-header svg {
+  transform: scale(1.2) translateY(-3px);
+  filter: drop-shadow(0 0 8px currentColor);
+}
+
+/* Gallery Images Hover Zoom */
+.gallery .images div {
+  overflow: hidden;
+  border-radius: 12px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+}
+
+.gallery .images div:hover {
+  box-shadow: 0 10px 25px rgba(0, 149, 255, 0.25);
+}
+
+.gallery .images img {
+  transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1) !important;
+}
+
+.gallery .images img:hover {
+  transform: scale(1.08);
+}
+
+/* Admin Dashboard Stat Cards Hover */
+.stat-card {
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Contact Details Hover Micro-interaction */
+.detail-item {
+  transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.detail-item:hover {
+  transform: translateX(6px);
+}
+
+.detail-item:hover .detail-icon-box {
+  background: rgba(0, 149, 255, 0.2);
+  color: #ffffff;
+  box-shadow: 0 0 15px rgba(0, 149, 255, 0.4);
+}
