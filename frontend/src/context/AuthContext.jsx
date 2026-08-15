@@ -111,7 +111,7 @@ export const AuthProvider = ({ children }) => {
         payload: res.data,
       });
 
-      return { success: true };
+      return { success: true, user: res.data.user };
     } catch (error) {
       return {
         success: false,
@@ -129,7 +129,7 @@ export const AuthProvider = ({ children }) => {
         payload: res.data,
       });
 
-      return { success: true };
+      return { success: true, user: res.data.user };
     } catch (error) {
       return {
         success: false,

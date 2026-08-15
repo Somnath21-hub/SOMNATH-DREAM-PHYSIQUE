@@ -5,6 +5,8 @@ import mongoose from "mongoose";
 import { sendEmail } from "./utils/sendEmail.js";
 import authRoutes from "./routes/auth.js";
 import apiRoutes from "./routes/api.js";
+import adminRoutes from "./routes/admin.js";
+import { seedDatabase } from "./utils/seedData.js";
 
 const app = express();
 const router = express.Router();
@@ -15,7 +17,10 @@ config({ path: "./config.env" });
 // Connect to MongoDB
 mongoose
   .connect(process.env.MONGODB_URI)
-  .then(() => console.log("MongoDB connected successfully"))
+  .then(() => {
+    console.log("MongoDB connected successfully");
+    seedDatabase();
+  })
   .catch((err) => {
     console.error("MongoDB connection error:", err.message);
     console.log("App will continue running without database connection");
@@ -56,6 +61,7 @@ app.get("/", (req, res) => {
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api", apiRoutes);
+app.use("/api/admin", adminRoutes);
 
 // Legacy contact route for backward compatibility
 router.post("/send/mail", async (req, res, next) => {

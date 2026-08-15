@@ -8,7 +8,7 @@ const router = express.Router();
 // Register
 router.post("/register", async (req, res) => {
   try {
-    const { name, email, password, phone, address } = req.body;
+    const { name, email, password, phone, address, role } = req.body;
 
     // Check if user already exists
     const userExists = await User.findOne({ email });
@@ -19,6 +19,10 @@ router.post("/register", async (req, res) => {
       });
     }
 
+    // Find default admin
+    const defaultAdmin = await User.findOne({ email: "admin@gym.com" });
+    const defaultAdminId = defaultAdmin ? defaultAdmin._id : null;
+
     // Create user
     const user = await User.create({
       name,
@@ -26,6 +30,8 @@ router.post("/register", async (req, res) => {
       password,
       phone,
       address,
+      role: role === "admin" ? "admin" : "user",
+      adminId: role === "admin" ? null : defaultAdminId,
     });
 
     const token = generateToken(user._id);

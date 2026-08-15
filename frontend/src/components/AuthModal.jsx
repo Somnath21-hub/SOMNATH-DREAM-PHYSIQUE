@@ -3,15 +3,18 @@ import { useAuth } from "../context/AuthContext";
 import { toast } from "react-toastify";
 import { ClipLoader } from "react-spinners";
 import { Eye, EyeOff, User, Mail, Lock, Phone, MapPin } from "lucide-react";
+import axios from "axios";
+import { API_URL } from "../config";
 
 const Login = ({ onToggleMode, onClose }) => {
+  const [role, setRole] = useState("user");
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const { login, logout } = useAuth();
 
   const handleChange = (e) => {
     setFormData({
@@ -27,8 +30,25 @@ const Login = ({ onToggleMode, onClose }) => {
     const result = await login(formData.email, formData.password);
 
     if (result.success) {
-      toast.success("Login successful!");
-      if (onClose) onClose();
+      const loggedUser = result.user;
+      if (role === "admin") {
+        if (loggedUser && loggedUser.role === "admin") {
+          toast.success("Welcome back, Admin!");
+          if (onClose) onClose();
+          window.location.href = "/admin/dashboard";
+        } else {
+          toast.error("Access denied. Admin credentials required.");
+          logout();
+        }
+      } else {
+        if (loggedUser && loggedUser.role === "admin") {
+          toast.error("Access denied. Invalid user credentials.");
+          logout();
+        } else {
+          toast.success("Login successful!");
+          if (onClose) onClose();
+        }
+      }
     } else {
       toast.error(result.message);
     }
@@ -39,6 +59,57 @@ const Login = ({ onToggleMode, onClose }) => {
   return (
     <div className="auth-form">
       <h2>Login to Your Account</h2>
+
+      {/* Role Selection Toggle */}
+      <div className="role-toggle-container" style={{
+        display: "flex",
+        background: "rgba(0, 0, 0, 0.05)",
+        border: "1px solid rgba(0, 0, 0, 0.08)",
+        borderRadius: "8px",
+        padding: "4px",
+        marginBottom: "24px",
+        gap: "4px"
+      }}>
+        <button
+          type="button"
+          onClick={() => setRole("user")}
+          style={{
+            flex: 1,
+            padding: "10px",
+            background: role === "user" ? "linear-gradient(135deg, #0095ff 0%, #0077d6 100%)" : "transparent",
+            color: role === "user" ? "#fff" : "#444",
+            border: "none",
+            borderRadius: "6px",
+            fontWeight: "600",
+            cursor: "pointer",
+            fontSize: "0.9rem",
+            transition: "all 0.3s ease",
+            boxShadow: role === "user" ? "0 4px 15px rgba(0, 149, 255, 0.3)" : "none"
+          }}
+        >
+          Login as User
+        </button>
+        <button
+          type="button"
+          onClick={() => setRole("admin")}
+          style={{
+            flex: 1,
+            padding: "10px",
+            background: role === "admin" ? "linear-gradient(135deg, #f15a24 0%, #d44a19 100%)" : "transparent",
+            color: role === "admin" ? "#fff" : "#444",
+            border: "none",
+            borderRadius: "6px",
+            fontWeight: "600",
+            cursor: "pointer",
+            fontSize: "0.9rem",
+            transition: "all 0.3s ease",
+            boxShadow: role === "admin" ? "0 4px 15px rgba(241, 90, 36, 0.3)" : "none"
+          }}
+        >
+          Login as Admin
+        </button>
+      </div>
+
       <form onSubmit={handleSubmit}>
         <div className="input-group">
           <Mail className="input-icon" />
@@ -87,6 +158,7 @@ const Login = ({ onToggleMode, onClose }) => {
 };
 
 const Register = ({ onToggleMode, onClose }) => {
+  const [role, setRole] = useState("user");
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -109,11 +181,20 @@ const Register = ({ onToggleMode, onClose }) => {
     e.preventDefault();
     setLoading(true);
 
-    const result = await register(formData);
+    const result = await register({
+      ...formData,
+      role: role
+    });
 
     if (result.success) {
-      toast.success("Registration successful!");
-      if (onClose) onClose();
+      if (role === "admin") {
+        toast.success("Admin registered successfully! Redirecting...");
+        if (onClose) onClose();
+        window.location.href = "/admin/dashboard";
+      } else {
+        toast.success("Registration successful!");
+        if (onClose) onClose();
+      }
     } else {
       toast.error(result.message);
     }
@@ -124,6 +205,57 @@ const Register = ({ onToggleMode, onClose }) => {
   return (
     <div className="auth-form">
       <h2>Create Your Account</h2>
+
+      {/* Role Selection Toggle */}
+      <div className="role-toggle-container" style={{
+        display: "flex",
+        background: "rgba(0, 0, 0, 0.05)",
+        border: "1px solid rgba(0, 0, 0, 0.08)",
+        borderRadius: "8px",
+        padding: "4px",
+        marginBottom: "24px",
+        gap: "4px"
+      }}>
+        <button
+          type="button"
+          onClick={() => setRole("user")}
+          style={{
+            flex: 1,
+            padding: "10px",
+            background: role === "user" ? "linear-gradient(135deg, #0095ff 0%, #0077d6 100%)" : "transparent",
+            color: role === "user" ? "#fff" : "#444",
+            border: "none",
+            borderRadius: "6px",
+            fontWeight: "600",
+            cursor: "pointer",
+            fontSize: "0.9rem",
+            transition: "all 0.3s ease",
+            boxShadow: role === "user" ? "0 4px 15px rgba(0, 149, 255, 0.3)" : "none"
+          }}
+        >
+          Register as User
+        </button>
+        <button
+          type="button"
+          onClick={() => setRole("admin")}
+          style={{
+            flex: 1,
+            padding: "10px",
+            background: role === "admin" ? "linear-gradient(135deg, #f15a24 0%, #d44a19 100%)" : "transparent",
+            color: role === "admin" ? "#fff" : "#444",
+            border: "none",
+            borderRadius: "6px",
+            fontWeight: "600",
+            cursor: "pointer",
+            fontSize: "0.9rem",
+            transition: "all 0.3s ease",
+            boxShadow: role === "admin" ? "0 4px 15px rgba(241, 90, 36, 0.3)" : "none"
+          }}
+        >
+          Register as Admin
+        </button>
+      </div>
+
       <form onSubmit={handleSubmit}>
         <div className="input-group">
           <User className="input-icon" />

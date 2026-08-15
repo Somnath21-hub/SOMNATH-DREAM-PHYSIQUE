@@ -46,6 +46,16 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: true,
   },
+  adminId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
+  resetPasswordOtp: {
+    type: String,
+  },
+  resetPasswordOtpExpires: {
+    type: Date,
+  },
   createdAt: {
     type: Date,
     default: Date.now,
