@@ -66,8 +66,12 @@ const AdminLogin = () => {
                 className="admin-form-control"
                 placeholder="admin@gym.com"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => setEmail(e.target.value.trim())}
                 style={{ paddingLeft: "40px" }}
+                autoCapitalize="none"
+                autoCorrect="off"
+                autoComplete="username"
+                spellCheck="false"
                 required
               />
               <Mail
@@ -93,6 +97,9 @@ const AdminLogin = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 style={{ paddingLeft: "40px" }}
+                autoCorrect="off"
+                autoComplete="current-password"
+                spellCheck="false"
                 required
               />
               <Lock

@@ -12,7 +12,10 @@ const router = express.Router();
 // 1. Admin Login (separate from general login)
 router.post("/auth/login", async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email: rawEmail, password: rawPassword } = req.body;
+    const email = rawEmail?.trim().toLowerCase();
+    const password = rawPassword?.trim();
+
 
     if (!email || !password) {
       return res.status(400).json({

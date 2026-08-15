@@ -59,7 +59,10 @@ router.post("/register", async (req, res) => {
 // Login
 router.post("/login", async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email: rawEmail, password: rawPassword } = req.body;
+    const email = rawEmail?.trim().toLowerCase();
+    const password = rawPassword?.trim();
+
 
     // Find user and include password
     const user = await User.findOne({ email }).select("+password");
