@@ -4,19 +4,24 @@ import { API_URL } from "../config";
 
 const AuthContext = createContext();
 
-// Clear any existing token on app start to prevent issues
 const getInitialToken = () => {
   try {
-    return localStorage.getItem("token");
+    const token = localStorage.getItem("token");
+    if (token) {
+      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+    }
+    return token;
   } catch (error) {
     console.log("Error reading token from localStorage:", error);
     return null;
   }
 };
 
+const initialToken = getInitialToken();
+
 const initialState = {
   user: null,
-  token: getInitialToken(),
+  token: initialToken,
   isAuthenticated: false,
   loading: true,
 };
@@ -25,7 +30,12 @@ const authReducer = (state, action) => {
   switch (action.type) {
     case "LOGIN_SUCCESS":
     case "REGISTER_SUCCESS":
-      localStorage.setItem("token", action.payload.token);
+      try {
+        localStorage.setItem("token", action.payload.token);
+      } catch (err) {
+        console.error("LocalStorage write error:", err);
+      }
+      axios.defaults.headers.common["Authorization"] = `Bearer ${action.payload.token}`;
       return {
         ...state,
         user: action.payload.user,
@@ -34,7 +44,12 @@ const authReducer = (state, action) => {
         loading: false,
       };
     case "LOGOUT":
-      localStorage.removeItem("token");
+      try {
+        localStorage.removeItem("token");
+      } catch (err) {
+        console.error("LocalStorage remove error:", err);
+      }
+      delete axios.defaults.headers.common["Authorization"];
       return {
         ...state,
         user: null,
@@ -50,7 +65,12 @@ const authReducer = (state, action) => {
         loading: false,
       };
     case "AUTH_ERROR":
-      localStorage.removeItem("token");
+      try {
+        localStorage.removeItem("token");
+      } catch (err) {
+        console.error("LocalStorage remove error:", err);
+      }
+      delete axios.defaults.headers.common["Authorization"];
       return {
         ...state,
         user: null,
@@ -66,7 +86,7 @@ const authReducer = (state, action) => {
 export const AuthProvider = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
-  // Set up axios defaults
+  // Set up axios defaults whenever token in state changes
   useEffect(() => {
     if (state.token) {
       axios.defaults.headers.common["Authorization"] = `Bearer ${state.token}`;
@@ -75,65 +95,104 @@ export const AuthProvider = ({ children }) => {
     }
   }, [state.token]);
 
-  // Load user on app start
+  // Load user on app start if token exists
   useEffect(() => {
+    let isMounted = true;
+
     const loadUser = async () => {
-      if (state.token) {
+      const currentToken = state.token || localStorage.getItem("token");
+      if (currentToken) {
         try {
-          const res = await axios.get(`${API_URL}/api/auth/me`);
-          dispatch({
-            type: "USER_LOADED",
-            payload: res.data.user,
+          const res = await axios.get(`${API_URL}/api/auth/me`, {
+            headers: { Authorization: `Bearer ${currentToken}` },
           });
+          if (isMounted && res.data?.success && res.data?.user) {
+            dispatch({
+              type: "USER_LOADED",
+              payload: res.data.user,
+            });
+          } else if (isMounted) {
+            dispatch({ type: "AUTH_ERROR" });
+          }
         } catch (error) {
-          console.log("Auth error:", error.message);
-          dispatch({ type: "AUTH_ERROR" });
+          console.log("Auth verification error:", error.response?.data?.message || error.message);
+          if (isMounted) {
+            dispatch({ type: "AUTH_ERROR" });
+          }
         }
       } else {
-        dispatch({ type: "AUTH_ERROR" });
+        if (isMounted) {
+          dispatch({ type: "AUTH_ERROR" });
+        }
       }
     };
 
-    // Add a small delay to prevent immediate loading issues
-    const timer = setTimeout(loadUser, 100);
-    return () => clearTimeout(timer);
+    loadUser();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const login = async (email, password) => {
     try {
+      const cleanEmail = String(email || "").trim().toLowerCase();
+      const cleanPassword = String(password || "").trim();
+
       const res = await axios.post(`${API_URL}/api/auth/login`, {
-        email,
-        password,
+        email: cleanEmail,
+        password: cleanPassword,
       });
 
-      dispatch({
-        type: "LOGIN_SUCCESS",
-        payload: res.data,
-      });
-
-      return { success: true, user: res.data.user };
+      if (res.data?.token) {
+        dispatch({
+          type: "LOGIN_SUCCESS",
+          payload: res.data,
+        });
+        return { success: true, user: res.data.user };
+      } else {
+        return {
+          success: false,
+          message: res.data?.message || "Invalid server response",
+        };
+      }
     } catch (error) {
       return {
         success: false,
-        message: error.response?.data?.message || "Login failed",
+        message: error.response?.data?.message || error.message || "Login failed. Please check your credentials.",
       };
     }
   };
 
   const register = async (userData) => {
     try {
-      const res = await axios.post(`${API_URL}/api/auth/register`, userData);
+      const payload = {
+        ...userData,
+        name: String(userData.name || "").trim(),
+        email: String(userData.email || "").trim().toLowerCase(),
+        password: String(userData.password || "").trim(),
+        phone: userData.phone ? String(userData.phone).trim() : "",
+        address: userData.address ? String(userData.address).trim() : "",
+      };
 
-      dispatch({
-        type: "REGISTER_SUCCESS",
-        payload: res.data,
-      });
+      const res = await axios.post(`${API_URL}/api/auth/register`, payload);
 
-      return { success: true, user: res.data.user };
+      if (res.data?.token) {
+        dispatch({
+          type: "REGISTER_SUCCESS",
+          payload: res.data,
+        });
+        return { success: true, user: res.data.user };
+      } else {
+        return {
+          success: false,
+          message: res.data?.message || "Registration failed",
+        };
+      }
     } catch (error) {
       return {
         success: false,
-        message: error.response?.data?.message || "Registration failed",
+        message: error.response?.data?.message || error.message || "Registration failed. Please try again.",
       };
     }
   };
@@ -144,16 +203,22 @@ export const AuthProvider = ({ children }) => {
 
   const updateProfile = async (profileData) => {
     try {
-      const res = await axios.put(`${API_URL}/api/auth/profile`, profileData);
-      dispatch({
-        type: "USER_LOADED",
-        payload: res.data.user,
+      const currentToken = state.token || localStorage.getItem("token");
+      const res = await axios.put(`${API_URL}/api/auth/profile`, profileData, {
+        headers: { Authorization: `Bearer ${currentToken}` },
       });
-      return { success: true };
+      if (res.data?.success && res.data?.user) {
+        dispatch({
+          type: "USER_LOADED",
+          payload: res.data.user,
+        });
+        return { success: true };
+      }
+      return { success: false, message: res.data?.message || "Failed to update profile" };
     } catch (error) {
       return {
         success: false,
-        message: error.response?.data?.message || "Profile update failed",
+        message: error.response?.data?.message || error.message || "Profile update failed",
       };
     }
   };
@@ -180,3 +245,4 @@ export const useAuth = () => {
   }
   return context;
 };
+

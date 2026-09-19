@@ -25,9 +25,17 @@ const Login = ({ onToggleMode, onClose }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const cleanEmail = formData.email?.trim().toLowerCase();
+    const cleanPassword = formData.password?.trim();
+
+    if (!cleanEmail || !cleanPassword) {
+      toast.error("Please provide both email and password");
+      return;
+    }
+
     setLoading(true);
 
-    const result = await login(formData.email, formData.password);
+    const result = await login(cleanEmail, cleanPassword);
 
     if (result.success) {
       const loggedUser = result.user;
@@ -115,6 +123,9 @@ const Login = ({ onToggleMode, onClose }) => {
             placeholder="Email Address"
             value={formData.email}
             onChange={handleChange}
+            autoComplete="username"
+            autoCapitalize="none"
+            spellCheck="false"
             required
           />
         </div>
@@ -127,6 +138,8 @@ const Login = ({ onToggleMode, onClose }) => {
             placeholder="Password"
             value={formData.password}
             onChange={handleChange}
+            autoComplete="current-password"
+            spellCheck="false"
             required
           />
           <button
@@ -175,11 +188,29 @@ const Register = ({ onToggleMode, onClose }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const cleanName = formData.name?.trim();
+    const cleanEmail = formData.email?.trim().toLowerCase();
+    const cleanPassword = formData.password?.trim();
+
+    if (!cleanName || !cleanEmail || !cleanPassword) {
+      toast.error("Please fill in all required fields (Name, Email, Password)");
+      return;
+    }
+
+    if (cleanPassword.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      return;
+    }
+
     setLoading(true);
 
     const result = await register({
-      ...formData,
-      role: role
+      name: cleanName,
+      email: cleanEmail,
+      password: cleanPassword,
+      phone: formData.phone?.trim() || "",
+      address: formData.address?.trim() || "",
+      role: role,
     });
 
     if (result.success) {
@@ -188,11 +219,11 @@ const Register = ({ onToggleMode, onClose }) => {
         if (onClose) onClose();
         window.location.href = "/admin/dashboard";
       } else {
-        toast.success("Registration successful!");
+        toast.success("Registration successful! Welcome to Dream Physique.");
         if (onClose) onClose();
       }
     } else {
-      toast.error(result.message);
+      toast.error(result.message || "Registration failed. Please try again.");
     }
 
     setLoading(false);

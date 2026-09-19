@@ -17,8 +17,9 @@ router.post("/register", async (req, res) => {
       });
     }
 
-    const email = rawEmail.trim().toLowerCase();
-    const password = rawPassword.trim();
+    const email = String(rawEmail).trim().toLowerCase();
+    const password = String(rawPassword).trim();
+    const trimmedName = String(name).trim();
 
     if (password.length < 6) {
       return res.status(400).json({
@@ -32,23 +33,30 @@ router.post("/register", async (req, res) => {
     if (userExists) {
       return res.status(400).json({
         success: false,
-        message: "An account with this email already exists",
+        message: "An account with this email already exists. Please login instead.",
       });
     }
 
-    // Find default admin
-    const defaultAdmin = await User.findOne({ email: "admin@gym.com" });
-    const defaultAdminId = defaultAdmin ? defaultAdmin._id : null;
+    // Find default admin if regular user
+    let defaultAdminId = null;
+    if (role !== "admin") {
+      const defaultAdmin = await User.findOne({ email: "admin@gym.com" });
+      if (defaultAdmin) {
+        defaultAdminId = defaultAdmin._id;
+      }
+    }
 
     // Create user
     const user = await User.create({
-      name: name.trim(),
+      name: trimmedName,
       email,
       password,
-      phone: phone ? phone.trim() : "",
-      address: address ? address.trim() : "",
+      phone: phone ? String(phone).trim() : "",
+      address: address ? String(address).trim() : "",
       role: role === "admin" ? "admin" : "user",
       adminId: role === "admin" ? null : defaultAdminId,
+      membershipType: "basic",
+      isActive: true,
     });
 
     const token = generateToken(user._id);
@@ -59,10 +67,14 @@ router.post("/register", async (req, res) => {
       token,
       user: {
         id: user._id,
+        _id: user._id,
         name: user.name,
         email: user.email,
         role: user.role,
         membershipType: user.membershipType,
+        phone: user.phone || "",
+        address: user.address || "",
+        isActive: user.isActive,
       },
     });
   } catch (error) {
@@ -74,7 +86,7 @@ router.post("/register", async (req, res) => {
     }
     res.status(500).json({
       success: false,
-      message: error.message,
+      message: error.message || "Registration failed. Please try again.",
     });
   }
 });
@@ -83,9 +95,16 @@ router.post("/register", async (req, res) => {
 router.post("/login", async (req, res) => {
   try {
     const { email: rawEmail, password: rawPassword } = req.body;
-    const email = rawEmail?.trim().toLowerCase();
-    const password = rawPassword?.trim();
 
+    if (!rawEmail || !rawPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "Please provide both email and password",
+      });
+    }
+
+    const email = String(rawEmail).trim().toLowerCase();
+    const password = String(rawPassword).trim();
 
     // Find user and include password
     const user = await User.findOne({ email }).select("+password");
@@ -94,6 +113,13 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({
         success: false,
         message: "Invalid email or password",
+      });
+    }
+
+    if (user.isActive === false) {
+      return res.status(403).json({
+        success: false,
+        message: "Your account has been deactivated. Please contact support.",
       });
     }
 
@@ -115,16 +141,20 @@ router.post("/login", async (req, res) => {
       token,
       user: {
         id: user._id,
+        _id: user._id,
         name: user.name,
         email: user.email,
         role: user.role,
         membershipType: user.membershipType,
+        phone: user.phone || "",
+        address: user.address || "",
+        isActive: user.isActive,
       },
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: error.message,
+      message: error.message || "Login failed. Please try again.",
     });
   }
 });
