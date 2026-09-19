@@ -8,14 +8,31 @@ const router = express.Router();
 // Register
 router.post("/register", async (req, res) => {
   try {
-    const { name, email, password, phone, address, role } = req.body;
+    const { name, email: rawEmail, password: rawPassword, phone, address, role } = req.body;
+
+    if (!name || !rawEmail || !rawPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "Please fill in all required fields (Name, Email, Password)",
+      });
+    }
+
+    const email = rawEmail.trim().toLowerCase();
+    const password = rawPassword.trim();
+
+    if (password.length < 6) {
+      return res.status(400).json({
+        success: false,
+        message: "Password must be at least 6 characters",
+      });
+    }
 
     // Check if user already exists
     const userExists = await User.findOne({ email });
     if (userExists) {
       return res.status(400).json({
         success: false,
-        message: "User already exists",
+        message: "An account with this email already exists",
       });
     }
 
@@ -25,11 +42,11 @@ router.post("/register", async (req, res) => {
 
     // Create user
     const user = await User.create({
-      name,
+      name: name.trim(),
       email,
       password,
-      phone,
-      address,
+      phone: phone ? phone.trim() : "",
+      address: address ? address.trim() : "",
       role: role === "admin" ? "admin" : "user",
       adminId: role === "admin" ? null : defaultAdminId,
     });
@@ -49,6 +66,12 @@ router.post("/register", async (req, res) => {
       },
     });
   } catch (error) {
+    if (error.code === 11000) {
+      return res.status(400).json({
+        success: false,
+        message: "An account with this email already exists",
+      });
+    }
     res.status(500).json({
       success: false,
       message: error.message,

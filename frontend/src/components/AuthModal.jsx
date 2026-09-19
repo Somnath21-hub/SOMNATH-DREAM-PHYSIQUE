@@ -31,26 +31,22 @@ const Login = ({ onToggleMode, onClose }) => {
 
     if (result.success) {
       const loggedUser = result.user;
-      if (role === "admin") {
-        if (loggedUser && loggedUser.role === "admin") {
-          toast.success("Welcome back, Admin!");
-          if (onClose) onClose();
+      if (loggedUser && loggedUser.role === "admin") {
+        toast.success("Welcome back, Admin!");
+        if (onClose) onClose();
+        if (role === "admin") {
           window.location.href = "/admin/dashboard";
-        } else {
-          toast.error("Access denied. Admin credentials required.");
-          logout();
         }
       } else {
-        if (loggedUser && loggedUser.role === "admin") {
-          toast.error("Access denied. Invalid user credentials.");
-          logout();
+        if (role === "admin") {
+          toast.info("Logged in as User (User accounts do not have access to Admin portal)");
         } else {
           toast.success("Login successful!");
-          if (onClose) onClose();
         }
+        if (onClose) onClose();
       }
     } else {
-      toast.error(result.message);
+      toast.error(result.message || "Invalid email or password");
     }
 
     setLoading(false);
