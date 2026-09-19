@@ -157,9 +157,16 @@ export const AuthProvider = ({ children }) => {
         };
       }
     } catch (error) {
+      const msg =
+        error.response?.data?.message ||
+        (error.response?.status === 404
+          ? "Auth endpoint not found (404). Please ensure the backend server is running on port 4000."
+          : error.message?.includes("Network Error") || !error.response
+          ? "Cannot connect to server. Please make sure the backend is running on port 4000."
+          : error.message || "Login failed. Please check your credentials.");
       return {
         success: false,
-        message: error.response?.data?.message || error.message || "Login failed. Please check your credentials.",
+        message: msg,
       };
     }
   };
@@ -190,9 +197,16 @@ export const AuthProvider = ({ children }) => {
         };
       }
     } catch (error) {
+      const msg =
+        error.response?.data?.message ||
+        (error.response?.status === 404
+          ? "Auth endpoint not found (404). Please ensure the backend server is running on port 4000."
+          : error.message?.includes("Network Error") || !error.response
+          ? "Cannot connect to server. Please make sure the backend is running on port 4000."
+          : error.message || "Registration failed. Please try again.");
       return {
         success: false,
-        message: error.response?.data?.message || error.message || "Registration failed. Please try again.",
+        message: msg,
       };
     }
   };

@@ -1,0 +1,11 @@
+{
+  "name": "mern-gym-website",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Dream Physique MERN Gym Website",
+  "scripts": {
+    "start": "node backend/app.js",
+    "dev:backend": "npm --prefix backend run dev",
+    "dev:frontend": "npm --prefix frontend run dev"
+  }
+}
