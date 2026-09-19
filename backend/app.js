@@ -77,8 +77,11 @@ app.get("/", (req, res) => {
 
 // Routes
 app.use("/api/auth", authRoutes);
+app.use("/auth", authRoutes);
+app.use("/api", authRoutes); // also matches /api/register, /api/login, /api/me
 app.use("/api", apiRoutes);
 app.use("/api/admin", adminRoutes);
+
 
 // Legacy contact route for backward compatibility
 router.post("/send/mail", async (req, res, next) => {
